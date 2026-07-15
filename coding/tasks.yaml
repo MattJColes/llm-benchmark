@@ -1,0 +1,16 @@
+tasks:
+  - id: word-counter-python
+    language: python
+    prompt: "Implement a CLI word counter with a --lines flag."
+    public_example: "echo 'one two' | word-count"
+    hidden_test_command: ["pytest", "-q"]
+  - id: json-parser-rust
+    language: rust
+    prompt: "Parse newline-delimited JSON logs and count levels."
+    public_example: "tool logs.jsonl"
+    hidden_test_command: ["cargo", "test", "--quiet"]
+  - id: csv-json-javascript
+    language: javascript
+    prompt: "Convert CSV input to JSON objects."
+    public_example: "tool input.csv"
+    hidden_test_command: ["npm", "test", "--", "--runInBand"]

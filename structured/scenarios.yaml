@@ -1,0 +1,14 @@
+tools:
+  - name: search
+    arguments: {query: string}
+  - name: read_file
+    arguments: {path: string}
+  - name: calculator
+    arguments: {expression: string}
+scenarios:
+  - id: no-call
+    expected_calls: []
+  - id: calculator
+    expected_calls:
+      - name: calculator
+        arguments: {expression: "84 * 3 / 2"}
