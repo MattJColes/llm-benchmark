@@ -83,6 +83,45 @@ def test_rejects_changed_fingerprint_and_perplexity() -> None:
     assert "perplexity is outside the configured tolerance" in result.failures
 
 
+def test_correctness_gate_marks_mismatched_backend_non_comparable() -> None:
+    from llm_benchmark.config import Backend
+    from llm_benchmark.preflight import check_correctness_gate, token_fingerprint
+
+    observed = token_fingerprint([5, 6, 7])
+    result = check_correctness_gate(
+        backend=Backend.CUDA,
+        token_ids=[5, 6, 7],
+        perplexity=4.2,
+        expected_fingerprints={"cuda": observed, "rocm": "deadbeef"},
+        perplexity_bounds=(1.0, 10.0),
+    )
+
+    assert result.passed
+    assert result.comparable is True
+
+    mismatched = check_correctness_gate(
+        backend=Backend.CUDA,
+        token_ids=[9, 9, 9],
+        perplexity=4.2,
+        expected_fingerprints={"cuda": observed},
+        perplexity_bounds=(1.0, 10.0),
+    )
+
+    assert not mismatched.passed
+    assert mismatched.comparable is False
+    assert "cuda token fingerprint does not match the recorded value" in mismatched.failures
+
+    first_observation = check_correctness_gate(
+        backend=Backend.METAL,
+        token_ids=[1, 2, 3],
+        perplexity=4.2,
+        expected_fingerprints={"cuda": observed},
+        perplexity_bounds=(1.0, 10.0),
+    )
+
+    assert first_observation.passed and first_observation.comparable is True
+
+
 def test_rejects_failed_vision_feature_and_stale_preflight() -> None:
     result = check_features(
         health_passed=True,

@@ -1,0 +1,29 @@
+- id: photo_001
+  file: photos/photo_001.jpg
+  questions:
+    - question: "What does the wall-mounted sign read?"
+      answer: "EXIT"
+      scoring: exact
+    - question: "How many chairs are visible in the frame?"
+      answer: 3
+      scoring: numeric
+      tolerance: 0
+- id: photo_002
+  file: photos/photo_002.jpg
+  questions:
+    - question: "Is the red mug positioned to the left of the keyboard?"
+      answer: "yes"
+      scoring: exact
+    - question: "How many coffee mugs are on the desk?"
+      answer: 2
+      scoring: numeric
+      tolerance: 0
+- id: photo_003
+  file: photos/photo_003.jpg
+  questions:
+    - question: "Transcribe the handwriting on the whiteboard."
+      answer: "Sprint Review 3pm"
+      scoring: exact
+    - question: "Which labelled objects appear in the photograph?"
+      answer: ["laptop", "monitor", "plant"]
+      scoring: exact_set

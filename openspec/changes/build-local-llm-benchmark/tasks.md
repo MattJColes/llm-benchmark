@@ -21,7 +21,7 @@
 - [x] 3.1 Implement Tier 0 binary/backend probes for llama.cpp, CUDA, ROCm, Vulkan physical-device detection, Metal load evidence, and expected/ unexpected backend handling.
 - [x] 3.2 Implement configured Rust, Python, Node, and Docker prerequisite checks and persist detected versions in preflight evidence.
 - [x] 3.3 Add the bundled tiny GGUF and MLX smoketest configurations and implement 32-token inference, NaN, exit-status, and GPU-offload checks.
-- [ ] 3.4 Implement backend-specific fixed-seed token fingerprint and bounded perplexity verification with non-comparable mismatch results.
+- [x] 3.4 Implement backend-specific fixed-seed token fingerprint and bounded perplexity verification with non-comparable mismatch results.
 - [x] 3.5 Implement requested-feature checks for endpoint chat completion, GBNF, vision image-token count, and maximum planned context allocation.
 - [x] 3.6 Implement preflight freshness comparison against binary commit, driver, and OS package state and block stale sweeps.
 - [x] 3.7 Add fixture-driven tests for CPU/software-Vulkan fallback, missing backend, fingerprint mismatch, stale evidence, and vision preflight failures.
@@ -48,9 +48,9 @@
 ## 6. Code Review Evaluation
 
 - [x] 6.1 Pin the httpx source commit and create the review-corpus manifest schema for injected bugs, control PRs, historical cases, categories, locations, rationale, and severity.
-- [ ] 6.2 Build the human-reviewed diff-shaped corpus with 25-30 injected bugs across 12-15 PRs, control PRs, and 5-10 reverted historical fix cases.
-- [ ] 6.3 Implement lgtmaybe invocation through its OpenAI-compatible provider with correctness/security categories and recursive hunk review configured and recorded.
-- [ ] 6.4 Implement finding/manifest matching requests to the pinned judge at temperature 0, verdict persistence, and manual false-positive allowlist support.
+- [x] 6.2 Build the human-reviewed diff-shaped corpus with 25-30 injected bugs across 12-15 PRs, control PRs, and 5-10 reverted historical fix cases.
+- [x] 6.3 Implement lgtmaybe invocation through its OpenAI-compatible provider with correctness/security categories and recursive hunk review configured and recorded.
+- [x] 6.4 Implement finding/manifest matching requests to the pinned judge at temperature 0, verdict persistence, and manual false-positive allowlist support.
 - [x] 6.5 Calculate precision, recall, and false positives per KLOC and block local sweeps when the frontier validity run does not meet the configured recall threshold.
 - [x] 6.6 Add tests for control PR scoring, partial judge verdicts, allowlisted findings, and validity-gate failures.
 
@@ -58,10 +58,10 @@
 
 - [x] 7.1 Create the VLM testset layout, manifest models, stable filename convention, pinned dimensions, and image validation that rejects unmanifested files.
 - [x] 7.2 Implement deterministic floor-plan, chart, architecture-diagram, and table generators with committed seeds and ground truth.
-- [ ] 7.3 Add owned photo ingestion that strips EXIF and records hand-labelled OCR, object-count, and spatial-relation questions.
-- [ ] 7.4 Implement constrained JSON request generation and exact, numeric-tolerance, set, structural, and explicitly configured judge scoring.
-- [ ] 7.5 Gate cross-backend vision report comparisons on successful image-token-count preflight evidence.
-- [ ] 7.6 Add generator determinism and scorer tests covering exact, numeric, set, structural, and missing-manifest cases.
+- [x] 7.3 Add owned photo ingestion that strips EXIF and records hand-labelled OCR, object-count, and spatial-relation questions.
+- [x] 7.4 Implement constrained JSON request generation and exact, numeric-tolerance, set, structural, and explicitly configured judge scoring.
+- [x] 7.5 Gate cross-backend vision report comparisons on successful image-token-count preflight evidence.
+- [x] 7.6 Add generator determinism and scorer tests covering exact, numeric, set, structural, and missing-manifest cases.
 
 ## 8. Structured Output And Tool Calling
 
@@ -74,11 +74,11 @@
 
 ## 9. Coding Repair Evaluation
 
-- [ ] 9.1 Define the ten owned coding task concepts in Rust, Python, and JavaScript with model-visible prompts/public examples and isolated hidden tests.
-- [ ] 9.2 Create per-task Docker images and execution controls that disable networking, enforce CPU/memory limits, and apply a 30-second timeout.
-- [ ] 9.3 Implement initial-generation and bounded repair-loop orchestration that passes verbatim failures without exposing hidden test source.
-- [ ] 9.4 Implement pass@1, pass@4, attempts-to-green, did-not-compile, compiled-but-wrong, timeout, and repair-blind outcome classification.
-- [ ] 9.5 Add integration tests using safe fixture tasks for a passing attempt, compile failure, hidden-test failure, timeout, and repair attempt limit.
+- [x] 9.1 Define the ten owned coding task concepts in Rust, Python, and JavaScript with model-visible prompts/public examples and isolated hidden tests.
+- [x] 9.2 Create per-task Docker images and execution controls that disable networking, enforce CPU/memory limits, and apply a 30-second timeout.
+- [x] 9.3 Implement initial-generation and bounded repair-loop orchestration that passes verbatim failures without exposing hidden test source.
+- [x] 9.4 Implement pass@1, pass@4, attempts-to-green, did-not-compile, compiled-but-wrong, timeout, and repair-blind outcome classification.
+- [x] 9.5 Add integration tests using safe fixture tasks for a passing attempt, compile failure, hidden-test failure, timeout, and repair attempt limit.
 
 ## 10. End-To-End Validation And Operations
 
