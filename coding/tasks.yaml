@@ -1,16 +1,95 @@
 tasks:
   - id: word-counter-python
     language: python
-    prompt: "Implement a CLI word counter with a --lines flag."
-    public_example: "echo 'one two' | word-count"
-    hidden_test_command: ["pytest", "-q"]
-  - id: json-parser-rust
+    prompt: |
+      Write solution.py exposing two functions: count_words(text: str) -> int returns
+      the count of whitespace-separated words, and count_lines(text: str) -> int
+      returns the count of newline-separated lines. An empty string yields 0.
+    public_example: "count_words('one two three') -> 3; count_lines('a\\nb\\nc') -> 3"
+    hidden_test_command: ["python", "-m", "pytest", "-q", "/tests"]
+    image: bench/word-counter-python
+
+  - id: palindrome-python
+    language: python
+    prompt: |
+      Write solution.py exposing is_palindrome(text: str) -> bool that returns True
+      when text reads the same forwards and backwards, ignoring letter case.
+    public_example: "is_palindrome('RaceCar') -> True; is_palindrome('hello') -> False"
+    hidden_test_command: ["python", "-m", "pytest", "-q", "/tests"]
+    image: bench/palindrome-python
+
+  - id: roman-numeral-python
+    language: python
+    prompt: |
+      Write solution.py exposing to_roman(n: int) -> str that converts a positive
+      integer (1..3999) to its Roman numeral representation.
+    public_example: "to_roman(4) -> 'IV'; to_roman(1994) -> 'MCMXCIV'"
+    hidden_test_command: ["python", "-m", "pytest", "-q", "/tests"]
+    image: bench/roman-numeral-python
+
+  - id: csv-summariser-python
+    language: python
+    prompt: |
+      Write solution.py exposing sum_column(rows: list[list[str]], column: int) -> float
+      that sums the numeric values found at the given zero-based column index across
+      all rows. Non-numeric or missing cells contribute 0.
+    public_example: "sum_column([['a','1'],['b','2']], 1) -> 3.0"
+    hidden_test_command: ["python", "-m", "pytest", "-q", "/tests"]
+    image: bench/csv-summariser-python
+
+  - id: fibonacci-rust
     language: rust
-    prompt: "Parse newline-delimited JSON logs and count levels."
-    public_example: "tool logs.jsonl"
-    hidden_test_command: ["cargo", "test", "--quiet"]
+    prompt: |
+      Write solution.rs exposing `pub fn fib(n: u64) -> u64` returning the nth Fibonacci
+      number with fib(0) == 0 and fib(1) == 1.
+    public_example: "fib(10) == 55"
+    hidden_test_command: ["sh", "-c", "rustc --test /tests/test_solution.rs -o /tmp/test && /tmp/test"]
+    image: bench/fibonacci-rust
+
+  - id: anagram-rust
+    language: rust
+    prompt: |
+      Write solution.rs exposing `pub fn is_anagram(a: &str, b: &str) -> bool` returning
+      true when a and b are anagrams (case-insensitive, ignoring non-letter characters).
+    public_example: "is_anagram(\"Listen\", \"Silent\") == true"
+    hidden_test_command: ["sh", "-c", "rustc --test /tests/test_solution.rs -o /tmp/test && /tmp/test"]
+    image: bench/anagram-rust
+
+  - id: fizzbuzz-rust
+    language: rust
+    prompt: |
+      Write solution.rs exposing `pub fn fizzbuzz(n: u64) -> Vec<String>` returning the
+      FizzBuzz sequence from 1 to n inclusive, where multiples of 3 are "Fizz",
+      multiples of 5 are "Buzz", and multiples of both are "FizzBuzz".
+    public_example: "fizzbuzz(3) == [\"1\", \"2\", \"Fizz\"]"
+    hidden_test_command: ["sh", "-c", "rustc --test /tests/test_solution.rs -o /tmp/test && /tmp/test"]
+    image: bench/fizzbuzz-rust
+
   - id: csv-json-javascript
     language: javascript
-    prompt: "Convert CSV input to JSON objects."
-    public_example: "tool input.csv"
-    hidden_test_command: ["npm", "test", "--", "--runInBand"]
+    prompt: |
+      Write solution.js with CommonJS module.exports exposing csvToJson(csv: string)
+      that parses a CSV string (first row is headers) into an array of objects keyed by
+      those headers, trimming surrounding whitespace from every cell.
+    public_example: "csvToJson('a,b\\n1,2') -> [{ a: '1', b: '2' }]"
+    hidden_test_command: ["node", "--test", "/tests/solution.test.js"]
+    image: bench/csv-json-javascript
+
+  - id: bracket-validator-javascript
+    language: javascript
+    prompt: |
+      Write solution.js with CommonJS module.exports exposing isValidBrackets(s: string)
+      returning true when every bracket is correctly matched and nested, considering
+      (), [], and {}.
+    public_example: "isValidBrackets('([{}])') -> true; isValidBrackets('([)]') -> false"
+    hidden_test_command: ["node", "--test", "/tests/solution.test.js"]
+    image: bench/bracket-validator-javascript
+
+  - id: dedupe-javascript
+    language: javascript
+    prompt: |
+      Write solution.js with CommonJS module.exports exposing dedupe(arr: any[])
+      returning a new array with duplicates removed, preserving first-occurrence order.
+    public_example: "dedupe([1, 2, 2, 3]) -> [1, 2, 3]"
+    hidden_test_command: ["node", "--test", "/tests/solution.test.js"]
+    image: bench/dedupe-javascript

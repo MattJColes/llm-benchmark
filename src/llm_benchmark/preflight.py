@@ -145,6 +145,46 @@ def token_fingerprint(token_ids: list[int]) -> str:
     return hashlib.sha256(",".join(str(token_id) for token_id in token_ids).encode()).hexdigest()
 
 
+@dataclass(frozen=True, slots=True)
+class CorrectnessGate:
+    failures: tuple[str, ...]
+    comparable: bool
+    observations: Mapping[str, str]
+
+    @property
+    def passed(self) -> bool:
+        return not self.failures
+
+
+def check_correctness_gate(
+    *,
+    backend: Backend,
+    token_ids: list[int],
+    perplexity: float,
+    expected_fingerprints: Mapping[str, str],
+    perplexity_bounds: tuple[float, float],
+) -> CorrectnessGate:
+    """Backend-specific fingerprint and bounded-perplexity check.
+
+    A backend absent from ``expected_fingerprints`` is a first observation and
+    therefore comparable; a mismatched fingerprint fails the gate and marks prior
+    results for that backend non-comparable rather than silently mixing them.
+    """
+    observed = token_fingerprint(token_ids)
+    failures: list[str] = []
+    expected = expected_fingerprints.get(backend.value)
+    comparable = expected is None or observed == expected
+    if expected is not None and observed != expected:
+        failures.append(f"{backend.value} token fingerprint does not match the recorded value")
+    minimum, maximum = perplexity_bounds
+    if not minimum <= perplexity <= maximum:
+        failures.append("perplexity is outside the configured tolerance")
+    return CorrectnessGate(
+        tuple(failures),
+        comparable,
+        {"backend": backend.value, "token_fingerprint": observed, "perplexity": str(perplexity)},
+    )
+
 def check_features(
     *,
     health_passed: bool,
