@@ -3,40 +3,12 @@
 from __future__ import annotations
 
 import subprocess
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from datetime import UTC, datetime
 from pathlib import Path
 
 
-@dataclass(frozen=True, slots=True)
-class RunnerMetrics:
-    process_id: int
-    started_at: datetime
+class ProcessRunner:
+    """Launches one server and exposes the OpenAI-compatible endpoint suites use."""
 
-
-class Runner(ABC):
-    """Launches one server and exposes the endpoint suites use."""
-
-    @property
-    @abstractmethod
-    def endpoint(self) -> str:
-        """Return the server's OpenAI-compatible base URL."""
-
-    @abstractmethod
-    def start(self) -> RunnerMetrics:
-        """Start the server process and return launch metrics."""
-
-    @abstractmethod
-    def load_log(self) -> str:
-        """Return the captured server load log."""
-
-    @abstractmethod
-    def stop(self) -> None:
-        """Stop the server process, escalating when it ignores termination."""
-
-
-class ProcessRunner(Runner):
     def __init__(
         self,
         *,
@@ -55,7 +27,7 @@ class ProcessRunner(Runner):
     def endpoint(self) -> str:
         return self._endpoint
 
-    def start(self) -> RunnerMetrics:
+    def start(self) -> None:
         if self._process is not None:
             raise RuntimeError("runner is already started")
         self._load_log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -69,7 +41,6 @@ class ProcessRunner(Runner):
             )
         finally:
             log_file.close()
-        return RunnerMetrics(process_id=self._process.pid, started_at=datetime.now(UTC))
 
     def load_log(self) -> str:
         if not self._load_log_path.exists():

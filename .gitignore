@@ -27,3 +27,9 @@ dist/
 results/runs/*/transcript/
 results/runs/*/*.jsonl.gz
 results/archives/
+
+.claude/
+.codex/
+.omp/
+.opencode/
+.pi/

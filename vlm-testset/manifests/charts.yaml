@@ -1,0 +1,9 @@
+- id: chart_001
+  file: diagrams/charts/chart_001.png
+  generator: src/llm_benchmark/vision_generators.py
+  seed: 42
+  questions:
+    - question: "What is the 2024 bar value?"
+      answer: 61.2
+      scoring: numeric
+      tolerance: 0.5

@@ -1,7 +1,14 @@
 import pytest
 from pydantic import ValidationError
 
-from llm_benchmark.code_review import ReviewCase, ReviewCorpus
+from llm_benchmark.code_review import (
+    JudgeVerdict,
+    ReviewCase,
+    ReviewCorpus,
+    require_validity_gate,
+    review_metrics,
+    score_verdicts,
+)
 
 
 def test_accepts_manifest_backed_bug_case() -> None:
@@ -39,3 +46,24 @@ def test_rejects_bug_fields_on_a_control_case() -> None:
                 "severity": "low",
             }
         )
+
+
+def test_calculates_metrics_and_enforces_frontier_gate() -> None:
+    metrics = review_metrics(matched=8, findings=10, injected_bugs=10, kloc=2)
+
+    assert metrics == {"precision": 0.8, "recall": 0.8, "false_positives_per_kloc": 1.0}
+    require_validity_gate(metrics["recall"])
+    with pytest.raises(RuntimeError, match="validity gate"):
+        require_validity_gate(0.79)
+
+
+def test_excludes_allowlisted_unmatched_findings() -> None:
+    matched, false_positives = score_verdicts(
+        [
+            JudgeVerdict(finding_id="a", case_id="bug-1", match="yes"),
+            JudgeVerdict(finding_id="b", match="no"),
+        ],
+        {"b"},
+    )
+
+    assert (matched, false_positives) == (1, 0)

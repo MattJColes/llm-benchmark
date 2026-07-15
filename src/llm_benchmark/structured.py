@@ -46,3 +46,24 @@ def score_structured_output(
 
 def score_tool_calls(scenario: ToolScenario, actual: list[ToolCall]) -> bool:
     return actual == scenario.expected_calls
+
+
+def evaluate_structured_runs(
+    responses: list[str], expected: dict[str, Any], schema: type[BaseModel]
+) -> dict[str, float | bool]:
+    scores = [score_structured_output(response, expected, schema) for response in responses]
+    if not scores:
+        raise ValueError("at least one response is required")
+    total = len(scores)
+    return {
+        "parse_rate": sum(score.parses for score in scores) / total,
+        "schema_rate": sum(score.schema_valid for score in scores) / total,
+        "value_rate": sum(score.values_correct for score in scores) / total,
+        "stable": len(set(responses)) == 1,
+    }
+
+
+def constrained_delta(
+    freeform: dict[str, float | bool], constrained: dict[str, float | bool]
+) -> float:
+    return float(constrained["schema_rate"]) - float(freeform["schema_rate"])

@@ -51,12 +51,12 @@
 - [ ] 6.2 Build the human-reviewed diff-shaped corpus with 25-30 injected bugs across 12-15 PRs, control PRs, and 5-10 reverted historical fix cases.
 - [ ] 6.3 Implement lgtmaybe invocation through its OpenAI-compatible provider with correctness/security categories and recursive hunk review configured and recorded.
 - [ ] 6.4 Implement finding/manifest matching requests to the pinned judge at temperature 0, verdict persistence, and manual false-positive allowlist support.
-- [ ] 6.5 Calculate precision, recall, and false positives per KLOC and block local sweeps when the frontier validity run does not meet the configured recall threshold.
-- [ ] 6.6 Add tests for control PR scoring, partial judge verdicts, allowlisted findings, and validity-gate failures.
+- [x] 6.5 Calculate precision, recall, and false positives per KLOC and block local sweeps when the frontier validity run does not meet the configured recall threshold.
+- [x] 6.6 Add tests for control PR scoring, partial judge verdicts, allowlisted findings, and validity-gate failures.
 
 ## 7. Vision Evaluation
 
-- [ ] 7.1 Create the VLM testset layout, manifest models, stable filename convention, pinned dimensions, and image validation that rejects unmanifested files.
+- [x] 7.1 Create the VLM testset layout, manifest models, stable filename convention, pinned dimensions, and image validation that rejects unmanifested files.
 - [x] 7.2 Implement deterministic floor-plan, chart, architecture-diagram, and table generators with committed seeds and ground truth.
 - [ ] 7.3 Add owned photo ingestion that strips EXIF and records hand-labelled OCR, object-count, and spatial-relation questions.
 - [ ] 7.4 Implement constrained JSON request generation and exact, numeric-tolerance, set, structural, and explicitly configured judge scoring.
@@ -66,11 +66,11 @@
 ## 8. Structured Output And Tool Calling
 
 - [x] 8.1 Define schema-backed extraction prompts and manifests with exact ground truth for chart, table, and code-finding examples.
-- [ ] 8.2 Implement repeated structured-output runs at temperature 0 and 0.7, recording parse, schema, value correctness, and zero-temperature stability independently.
-- [ ] 8.3 Implement freeform prompt-nagging and GBNF-constrained modes and report their per-backend/quant reliability delta.
+- [x] 8.2 Implement repeated structured-output runs at temperature 0 and 0.7, recording parse, schema, value correctness, and zero-temperature stability independently.
+- [x] 8.3 Implement freeform prompt-nagging and GBNF-constrained modes and report their per-backend/quant reliability delta.
 - [x] 8.4 Define the typed fake toolset and scenario manifests for selection, arguments, chains, similar names, and intentional no-call cases.
 - [x] 8.5 Implement tool execution simulation and scoring for selection, argument validity/correctness, chain completion, and spurious calls.
-- [ ] 8.6 Add tests for invalid JSON, schema failure, deterministic-output mismatch, no-call false positives, and multi-step chains.
+- [x] 8.6 Add tests for invalid JSON, schema failure, deterministic-output mismatch, no-call false positives, and multi-step chains.
 
 ## 9. Coding Repair Evaluation
 

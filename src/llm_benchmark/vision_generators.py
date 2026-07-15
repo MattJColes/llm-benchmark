@@ -36,9 +36,8 @@ def generate_table(path: Path, *, seed: int) -> list[list[int]]:
 
 
 def generate_architecture(path: Path, *, seed: int) -> list[tuple[str, str]]:
-    randomizer = random.Random(seed)
     nodes = ["client", "api", "worker", "store"]
-    edges = [(nodes[index], nodes[index + 1]) for index in range(3) if randomizer.random() >= 0]
+    edges = [(nodes[index], nodes[index + 1]) for index in range(3)]
     figure, axis = pyplot.subplots(figsize=(6, 2), dpi=100)
     axis.axis("off")
     for index, node in enumerate(nodes):

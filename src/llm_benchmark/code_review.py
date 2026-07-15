@@ -54,3 +54,42 @@ class ReviewCorpus(BaseModel):
     repository: str
     commit: str = Field(pattern=r"^[a-f0-9]{40}$")
     cases: list[ReviewCase]
+
+
+class JudgeVerdict(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    finding_id: str
+    case_id: str | None = None
+    match: str
+
+
+def score_verdicts(verdicts: list[JudgeVerdict], allowlisted_findings: set[str]) -> tuple[int, int]:
+    matched = sum(verdict.match in {"yes", "partial"} for verdict in verdicts)
+    false_positives = sum(
+        verdict.match == "no" and verdict.finding_id not in allowlisted_findings
+        for verdict in verdicts
+    )
+    return matched, false_positives
+
+
+def review_metrics(
+    *, matched: int, findings: int, injected_bugs: int, kloc: float
+) -> dict[str, float]:
+    if injected_bugs <= 0 or findings < 0 or matched < 0 or kloc <= 0:
+        raise ValueError(
+            "injected_bugs, findings, matched, and kloc must be positive where applicable"
+        )
+    false_positives = max(findings - matched, 0)
+    return {
+        "precision": matched / findings if findings else 0.0,
+        "recall": matched / injected_bugs,
+        "false_positives_per_kloc": false_positives / kloc,
+    }
+
+
+def require_validity_gate(recall: float, threshold: float = 0.8) -> None:
+    if recall < threshold:
+        raise RuntimeError(
+            f"frontier validity gate failed: recall {recall:.2f} is below {threshold:.2f}"
+        )

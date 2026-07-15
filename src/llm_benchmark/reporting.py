@@ -6,11 +6,6 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
-import matplotlib
-
-matplotlib.use("Agg")
-from matplotlib import pyplot
-
 from llm_benchmark.evidence import read_events
 
 
@@ -82,34 +77,6 @@ def generate_unmatched_findings_queue(results_root: Path) -> Path:
         encoding="utf-8",
     )
     return queue_path
-
-
-def generate_throughput_chart(results_root: Path) -> Path:
-    labels: list[str] = []
-    prefill: list[float] = []
-    decode: list[float] = []
-    for timing_path in sorted((results_root / "runs").glob("*/timings.jsonl")):
-        events = list(read_events(timing_path))
-        prefill_value = _latest(events, "prefill_tokens_per_second")
-        decode_value = _latest(events, "decode_tokens_per_second")
-        if prefill_value is None or decode_value is None:
-            continue
-        labels.append(timing_path.parent.name)
-        prefill.append(float(prefill_value))
-        decode.append(float(decode_value))
-    chart_path = results_root / "reports" / "throughput.png"
-    chart_path.parent.mkdir(parents=True, exist_ok=True)
-    figure, axis = pyplot.subplots()
-    positions = range(len(labels))
-    axis.bar([position - 0.2 for position in positions], prefill, 0.4, label="Prefill")
-    axis.bar([position + 0.2 for position in positions], decode, 0.4, label="Decode")
-    axis.set_xticks(list(positions), labels, rotation=45, ha="right")
-    axis.set_ylabel("tokens/s")
-    axis.legend()
-    figure.tight_layout()
-    figure.savefig(chart_path, dpi=200)
-    pyplot.close(figure)
-    return chart_path
 
 
 def generate_track_reports(results_root: Path) -> list[Path]:

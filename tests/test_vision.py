@@ -1,4 +1,12 @@
-from llm_benchmark.vision import ScoringMode, VisionAsset, VisionQuestion, score_answer
+import pytest
+
+from llm_benchmark.vision import (
+    ScoringMode,
+    VisionAsset,
+    VisionQuestion,
+    score_answer,
+    validate_asset_file,
+)
 
 
 def test_scores_numeric_and_set_answers() -> None:
@@ -21,3 +29,14 @@ def test_validates_stable_asset_name() -> None:
     )
 
     assert asset.id == "chart_014"
+
+
+def test_rejects_missing_manifest_asset(tmp_path) -> None:
+    asset = VisionAsset(
+        id="chart_001",
+        file="diagrams/charts/chart_001.png",
+        questions=[VisionQuestion(question="x", answer="x", scoring="exact")],
+    )
+
+    with pytest.raises(ValueError, match="missing"):
+        validate_asset_file(asset, tmp_path)
