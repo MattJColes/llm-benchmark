@@ -9,6 +9,7 @@ description = "Reproducible local LLM inference benchmarks"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+  "lgtmaybe==0.11.0",
   "matplotlib>=3.10,<4",
   "pydantic>=2.11,<3",
   "PyYAML>=6.0,<7",
@@ -18,15 +19,10 @@ dependencies = [
 bench = "llm_benchmark.cli:main"
 
 [project.optional-dependencies]
-mlx = [
-    "mlx-lm>=0.31,<0.32 ; sys_platform == 'darwin'",
-]
+mlx = ["mlx-lm>=0.31,<0.32 ; sys_platform == 'darwin'"]
 
 [dependency-groups]
-dev = [
-  "pytest>=8.3,<9",
-  "ruff>=0.11,<1",
-]
+dev = ["pytest>=8.3,<9", "ruff>=0.11,<1"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

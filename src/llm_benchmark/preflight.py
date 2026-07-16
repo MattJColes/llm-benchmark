@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 import shlex
 import subprocess
 from collections.abc import Mapping
@@ -24,13 +25,16 @@ class CommandResult:
 
 class CommandRunner:
     def run(self, command: tuple[str, ...], timeout_seconds: float) -> CommandResult:
-        completed = subprocess.run(
-            command,
-            capture_output=True,
-            check=False,
-            text=True,
-            timeout=timeout_seconds,
-        )
+        try:
+            completed = subprocess.run(
+                command,
+                capture_output=True,
+                check=False,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except FileNotFoundError:
+            return CommandResult(command, 127, "", f"command not found: {command[0]}")
         return CommandResult(command, completed.returncode, completed.stdout, completed.stderr)
 
 
@@ -70,9 +74,13 @@ def check_tier_zero(
     warnings: list[str] = []
 
     llama_version = command_runner.run((llama_cli, "--version"), timeout_seconds=10)
+    version_output = f"{llama_version.stdout}\n{llama_version.stderr}".strip()
     if llama_version.exit_code != 0:
         failures.append(f"{llama_cli} --version failed")
-    elif pins.llama_cpp_commit not in llama_version.stdout:
+    elif (
+        pins.llama_cpp_commit not in version_output
+        and pins.llama_cpp_commit[:8] not in version_output
+    ):
         failures.append("llama.cpp version does not match the configured commit")
 
     detected = _detect_backends(command_runner)
@@ -90,7 +98,7 @@ def check_tier_zero(
     return PreflightResult(
         tuple(failures),
         tuple(warnings),
-        {"llama_cpp_version": llama_version.stdout.strip()},
+        {"llama_cpp_version": version_output},
     )
 
 
@@ -102,7 +110,10 @@ def check_prerequisites(box: Box, command_runner: CommandRunner) -> PreflightRes
         observations[name] = result.stdout.strip()
         if result.exit_code != 0:
             failures.append(f"{name} prerequisite failed: {prerequisite.check}")
-        elif prerequisite.pin != "available" and prerequisite.pin not in result.stdout:
+        elif (
+            prerequisite.pin != "available"
+            and re.search(re.escape(prerequisite.pin).replace("x", r"\d+"), result.stdout) is None
+        ):
             failures.append(f"{name} version does not match {prerequisite.pin}")
     return PreflightResult(tuple(failures), (), observations)
 
@@ -185,6 +196,7 @@ def check_correctness_gate(
         {"backend": backend.value, "token_fingerprint": observed, "perplexity": str(perplexity)},
     )
 
+
 def check_features(
     *,
     health_passed: bool,
@@ -206,7 +218,7 @@ def check_features(
         and vision_token_count != expected_vision_token_count
     ):
         failures.append("vision image token count does not match the configured value")
-    if context_allocated is False:
+    if context_allocated is not None and not context_allocated:
         failures.append("maximum planned context allocation failed")
     return PreflightResult(tuple(failures), (), {})
 

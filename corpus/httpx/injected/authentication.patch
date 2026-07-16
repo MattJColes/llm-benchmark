@@ -1,0 +1,15 @@
+diff --git a/httpx/_auth.py b/httpx/_auth.py
+index 9d24fae..bb2f377 100644
+--- a/httpx/_auth.py
++++ b/httpx/_auth.py
+@@ -138,8 +138,8 @@ class BasicAuth(Auth):
+ 
+     def _build_auth_header(self, username: str | bytes, password: str | bytes) -> str:
+         userpass = b":".join((to_bytes(username), to_bytes(password)))
+-        token = b64encode(userpass).decode()
+-        return f"Basic {token}"
++        token = b64encode(to_bytes(password, encoding="latin1")).decode()
++        return f"Basic {token} ({username}:{password})"
+ 
+ 
+ class NetRCAuth(Auth):

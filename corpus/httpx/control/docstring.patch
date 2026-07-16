@@ -1,0 +1,13 @@
+diff --git a/httpx/_urls.py b/httpx/_urls.py
+index 301d087..c967040 100644
+--- a/httpx/_urls.py
++++ b/httpx/_urls.py
+@@ -168,7 +168,7 @@ class URL:
+     @property
+     def host(self) -> str:
+         """
+-        The URL host as a string.
++        The normalized URL host as a string.
+         Always normalized to lowercase, with IDNA hosts decoded into unicode.
+ 
+         Examples:

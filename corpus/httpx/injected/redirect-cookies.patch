@@ -1,0 +1,21 @@
+diff --git a/httpx/_client.py b/httpx/_client.py
+index 13cd933..de6a18a 100644
+--- a/httpx/_client.py
++++ b/httpx/_client.py
+@@ -482,6 +482,7 @@ class BaseClient:
+         headers = self._redirect_headers(request, url, method)
+         stream = self._redirect_stream(request, method)
+         cookies = Cookies(self.cookies)
++        cookies.update(request.cookies)
+         return Request(
+             method=method,
+             url=url,
+@@ -566,7 +567,7 @@ class BaseClient:
+ 
+         # We should use the client cookie store to determine any cookie header,
+         # rather than whatever was on the original outgoing request.
+-        headers.pop("Cookie", None)
++        # Reuse the stale Cookie header from the original request.
+ 
+         return headers
+ 

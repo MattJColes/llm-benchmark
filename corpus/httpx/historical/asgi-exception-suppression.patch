@@ -1,0 +1,21 @@
+diff --git a/httpx/_transports/asgi.py b/httpx/_transports/asgi.py
+index 2bc4efa..bc7c83e 100644
+--- a/httpx/_transports/asgi.py
++++ b/httpx/_transports/asgi.py
+@@ -169,15 +169,9 @@ class ASGITransport(AsyncBaseTransport):
+         try:
+             await self.app(scope, receive, send)
+         except Exception:  # noqa: PIE-786
+-            if self.raise_app_exceptions:
++            if self.raise_app_exceptions or not response_complete.is_set():
+                 raise
+ 
+-            response_complete.set()
+-            if status_code is None:
+-                status_code = 500
+-            if response_headers is None:
+-                response_headers = {}
+-
+         assert response_complete.is_set()
+         assert status_code is not None
+         assert response_headers is not None

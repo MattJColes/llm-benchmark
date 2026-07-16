@@ -15,8 +15,12 @@ from llm_benchmark.runners import LlamaCppRunner, MlxRunner
 
 class _CompletionHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:  # noqa: N802
-        content_length = int(self.headers["Content-Length"])
-        request = json.loads(self.rfile.read(content_length))
+        try:
+            content_length = int(self.headers.get("Content-Length", "0"))
+            request = json.loads(self.rfile.read(content_length))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            self.send_error(400)
+            return
         if self.path == "/completion":
             response = {"content": request["prompt"], "tokens": [1, 2, 3]}
         else:
@@ -28,8 +32,8 @@ class _CompletionHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def log_message(self, _format: str, *_args: Any) -> None:
-        return
+    def log_message(self, format: str, *args: Any) -> None:
+        del format, args
 
 
 def _fake_server() -> Iterator[tuple[ThreadingHTTPServer, Thread]]:
@@ -57,9 +61,10 @@ def test_runner_commands_target_the_expected_servers(tmp_path: Path) -> None:
         load_log_path=tmp_path / "mlx.log",
     )
 
-    assert llama.command[:3] == ("llama-server", "-m", "model.gguf")
+    assert list(llama.command[:3]) == ["llama-server", "-m", "model.gguf"]
     assert "--n-gpu-layers" in llama.command
-    assert mlx.command == (
+    assert list(llama.command[-2:]) == ["--verbosity", "4"]
+    assert list(mlx.command) == [
         "mlx_lm.server",
         "--model",
         "model",
@@ -67,7 +72,7 @@ def test_runner_commands_target_the_expected_servers(tmp_path: Path) -> None:
         "127.0.0.1",
         "--port",
         "8081",
-    )
+    ]
 
 
 def test_client_retains_a_fake_server_completion(tmp_path: Path) -> None:
@@ -87,7 +92,23 @@ def test_client_retains_a_fake_server_completion(tmp_path: Path) -> None:
     with gzip.open(
         tmp_path / "transcript" / "sample-1.json.gz", "rt", encoding="utf-8"
     ) as transcript:
-        assert json.load(transcript)["request"]["model"] == "tiny"
+        try:
+            retained = json.load(transcript)
+        except (OSError, json.JSONDecodeError) as error:
+            raise AssertionError("invalid retained transcript") from error
+        assert retained["request"]["model"] == "tiny"
+
+
+def test_transcript_ids_cannot_create_nested_paths(tmp_path: Path) -> None:
+    path = write_transcript(
+        tmp_path / "transcript",
+        "httpx/_client.py:10:correctness:title",
+        {"prompt": "x"},
+        {"output": "y"},
+    )
+
+    assert path.parent == tmp_path / "transcript"
+    assert path.is_file()
 
 
 def test_client_requests_raw_completion_tokens(tmp_path: Path) -> None:

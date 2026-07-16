@@ -23,12 +23,23 @@ class FakeCommandRunner(CommandRunner):
         return self._responses.get(command, CommandResult(command, 1, "", "not installed"))
 
 
+def test_missing_probe_command_is_unavailable() -> None:
+    command = ("command-that-does-not-exist-llm-benchmark",)
+
+    result = CommandRunner().run(command, timeout_seconds=1)
+
+    assert result.exit_code == 127
+    assert result.stderr == f"command not found: {command[0]}"
+
+
 def test_rejects_software_vulkan_and_missing_rocm() -> None:
     box = Box.model_validate(
         {"id": "framework", "os": "ubuntu24", "gpu": "strix_halo", "expect": ["rocm", "vulkan"]}
     )
     responses = {
-        ("llama-cli", "--version"): CommandResult(("llama-cli", "--version"), 0, "commit abc", ""),
+        ("llama-cli", "--version"): CommandResult(
+            ("llama-cli", "--version"), 0, "", "commit abcdefgh"
+        ),
         ("vulkaninfo", "--summary"): CommandResult(
             ("vulkaninfo", "--summary"), 0, "GPU0: llvmpipe", ""
         ),
@@ -36,14 +47,14 @@ def test_rejects_software_vulkan_and_missing_rocm() -> None:
 
     result = check_tier_zero(
         box=box,
-        pins=VersionPins(llama_cpp_commit="abc"),
+        pins=VersionPins(llama_cpp_commit="abcdefghi"),
         llama_cli="llama-cli",
         load_log="Vulkan0",
         command_runner=FakeCommandRunner(responses),
     )
 
     assert not result.passed
-    assert "expected backend is unavailable: rocm" in result.failures
+    assert result.failures.count("expected backend is unavailable: rocm")
     assert "vulkaninfo does not report an AMD physical device" in result.failures
 
 
@@ -54,18 +65,22 @@ def test_records_matching_prerequisite_versions(tmp_path: Path) -> None:
             "os": "ubuntu24",
             "gpu": "gb10",
             "expect": ["cuda"],
-            "coding_prereqs": {"python": {"check": "python3 --version", "pin": "3.12"}},
+            "coding_prereqs": {
+                "python": {"check": "python3 --version", "pin": "3.12"},
+                "node": {"check": "node --version", "pin": "22.x"},
+            },
         }
     )
     responses = {
-        ("python3", "--version"): CommandResult(("python3", "--version"), 0, "Python 3.12.13", "")
+        ("python3", "--version"): CommandResult(("python3", "--version"), 0, "Python 3.12.13", ""),
+        ("node", "--version"): CommandResult(("node", "--version"), 0, "v22.23.1", ""),
     }
 
     result = check_prerequisites(box, FakeCommandRunner(responses))
     record_preflight(tmp_path / "timings.jsonl", result)
 
     assert result.passed
-    assert result.observations == {"python": "Python 3.12.13"}
+    assert result.observations == {"python": "Python 3.12.13", "node": "v22.23.1"}
     assert "Python 3.12.13" in (tmp_path / "timings.jsonl").read_text(encoding="utf-8")
 
 
@@ -80,7 +95,7 @@ def test_rejects_changed_fingerprint_and_perplexity() -> None:
 
     assert not result.passed
     assert "token fingerprint does not match the configured value" in result.failures
-    assert "perplexity is outside the configured tolerance" in result.failures
+    assert result.failures.count("perplexity is outside the configured tolerance")
 
 
 def test_correctness_gate_marks_mismatched_backend_non_comparable() -> None:
@@ -97,7 +112,7 @@ def test_correctness_gate_marks_mismatched_backend_non_comparable() -> None:
     )
 
     assert result.passed
-    assert result.comparable is True
+    assert result.comparable
 
     mismatched = check_correctness_gate(
         backend=Backend.CUDA,
@@ -108,7 +123,7 @@ def test_correctness_gate_marks_mismatched_backend_non_comparable() -> None:
     )
 
     assert not mismatched.passed
-    assert mismatched.comparable is False
+    assert not mismatched.comparable
     assert "cuda token fingerprint does not match the recorded value" in mismatched.failures
 
     first_observation = check_correctness_gate(
@@ -119,7 +134,7 @@ def test_correctness_gate_marks_mismatched_backend_non_comparable() -> None:
         perplexity_bounds=(1.0, 10.0),
     )
 
-    assert first_observation.passed and first_observation.comparable is True
+    assert first_observation.passed and first_observation.comparable
 
 
 def test_rejects_failed_vision_feature_and_stale_preflight() -> None:

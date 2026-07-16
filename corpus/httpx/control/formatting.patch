@@ -1,0 +1,15 @@
+diff --git a/httpx/_models.py b/httpx/_models.py
+index 2cc8632..c8b9cdf 100644
+--- a/httpx/_models.py
++++ b/httpx/_models.py
+@@ -50,7 +50,9 @@ from ._utils import to_bytes_or_str, to_str
+ 
+ __all__ = ["Cookies", "Headers", "Request", "Response"]
+ 
+-SENSITIVE_HEADERS = {"authorization", "proxy-authorization"}
++SENSITIVE_HEADERS = {
++    "authorization", "proxy-authorization"
++}
+ 
+ 
+ def _is_known_encoding(encoding: str) -> bool:

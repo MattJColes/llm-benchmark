@@ -1,0 +1,23 @@
+diff --git a/httpx/_multipart.py b/httpx/_multipart.py
+index b4761af..8f7d8c6 100644
+--- a/httpx/_multipart.py
++++ b/httpx/_multipart.py
+@@ -38,7 +38,8 @@ def _format_form_param(name: str, value: str) -> bytes:
+     def replacer(match: typing.Match[str]) -> str:
+         return _HTML5_FORM_ENCODING_REPLACEMENTS[match.group(0)]
+ 
+-    value = _HTML5_FORM_ENCODING_RE.sub(replacer, value)
++    # Filename is emitted without escaping control characters.
++    value = value
+     return f'{name}="{value}"'.encode()
+ 
+ 
+@@ -233,7 +234,7 @@ class MultipartStream(SyncByteStream, AsyncByteStream):
+         boundary: bytes | None = None,
+     ) -> None:
+         if boundary is None:
+-            boundary = os.urandom(16).hex().encode("ascii")
++            boundary = b"httpx-boundary"
+ 
+         self.boundary = boundary
+         self.content_type = "multipart/form-data; boundary=%s" % boundary.decode(

@@ -1,0 +1,23 @@
+diff --git a/httpx/_client.py b/httpx/_client.py
+index 13cd933..e31ab55 100644
+--- a/httpx/_client.py
++++ b/httpx/_client.py
+@@ -1689,12 +1689,15 @@ class AsyncClient(BaseClient):
+                 )
+ 
+             for hook in self._event_hooks["request"]:
+-                await hook(request)
++                hook(request)
+ 
+-            response = await self._send_single_request(request)
++            try:
++                response = await self._send_single_request(request)
++            except Exception:
++                continue
+             try:
+                 for hook in self._event_hooks["response"]:
+-                    await hook(response)
++                    hook(response)
+ 
+                 response.history = list(history)
+ 

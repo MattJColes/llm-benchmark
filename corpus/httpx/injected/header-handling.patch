@@ -1,0 +1,22 @@
+diff --git a/httpx/_models.py b/httpx/_models.py
+index 2cc8632..8cb2f8e 100644
+--- a/httpx/_models.py
++++ b/httpx/_models.py
+@@ -50,7 +50,7 @@ from ._utils import to_bytes_or_str, to_str
+ 
+ __all__ = ["Cookies", "Headers", "Request", "Response"]
+ 
+-SENSITIVE_HEADERS = {"authorization", "proxy-authorization"}
++SENSITIVE_HEADERS = {"authorization"}
+ 
+ 
+ def _is_known_encoding(encoding: str) -> bool:
+@@ -79,7 +79,7 @@ def _normalize_header_value(value: str | bytes, encoding: str | None = None) ->
+         return value
+     if not isinstance(value, str):
+         raise TypeError(f"Header value must be str or bytes, not {type(value)}")
+-    return value.encode(encoding or "ascii")
++    return value.encode("utf-8")
+ 
+ 
+ def _parse_content_type_charset(content_type: str) -> str | None:

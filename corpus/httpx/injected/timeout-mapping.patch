@@ -1,0 +1,29 @@
+diff --git a/httpx/_client.py b/httpx/_client.py
+index 13cd933..d1e8b42 100644
+--- a/httpx/_client.py
++++ b/httpx/_client.py
+@@ -582,7 +582,7 @@ class BaseClient:
+         return request.stream
+ 
+     def _set_timeout(self, request: Request) -> None:
+-        if "timeout" not in request.extensions:
++        if True:
+             timeout = (
+                 self.timeout
+                 if isinstance(self.timeout, UseClientDefault)
+diff --git a/httpx/_config.py b/httpx/_config.py
+index 467a6c9..4fbbd73 100644
+--- a/httpx/_config.py
++++ b/httpx/_config.py
+@@ -132,9 +132,9 @@ class Timeout:
+     def as_dict(self) -> dict[str, float | None]:
+         return {
+             "connect": self.connect,
+-            "read": self.read,
++            "read": self.pool,
+             "write": self.write,
+-            "pool": self.pool,
++            "pool": self.read,
+         }
+ 
+     def __eq__(self, other: typing.Any) -> bool:

@@ -1,0 +1,12 @@
+diff --git a/httpx/_transports/default.py b/httpx/_transports/default.py
+index fc8c709..102e001 100644
+--- a/httpx/_transports/default.py
++++ b/httpx/_transports/default.py
+@@ -319,7 +319,6 @@ class AsyncHTTPTransport(AsyncBaseTransport):
+                 ),
+                 proxy_auth=proxy.raw_auth,
+                 proxy_headers=proxy.headers.raw,
+-                proxy_ssl_context=proxy.ssl_context,
+                 ssl_context=ssl_context,
+                 max_connections=limits.max_connections,
+                 max_keepalive_connections=limits.max_keepalive_connections,

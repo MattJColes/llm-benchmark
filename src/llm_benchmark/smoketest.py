@@ -43,18 +43,25 @@ def check_smoketest(
 
 def _completion_content(completion: dict[str, Any]) -> str:
     try:
-        return str(completion["choices"][0]["message"]["content"])
+        message = completion["choices"][0]["message"]
+        return str(message.get("content") or message.get("reasoning_content") or "")
     except (IndexError, KeyError, TypeError):
         return ""
 
 
 def _completion_token_count(completion: dict[str, Any]) -> int:
     usage = completion.get("usage", {})
-    return int(usage.get("completion_tokens", 0))
+    try:
+        return int(usage.get("completion_tokens", 0))
+    except (TypeError, ValueError):
+        return 0
 
 
 def _offload_ratio(load_log: str) -> float | None:
     match = re.search(r"offloaded\s+(\d+)\s*/\s*(\d+)\s+layers", load_log, flags=re.IGNORECASE)
     if match is None:
         return None
-    return int(match.group(1)) / int(match.group(2))
+    try:
+        return int(match.group(1)) / int(match.group(2))
+    except (ValueError, ZeroDivisionError):
+        return None

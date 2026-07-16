@@ -83,6 +83,8 @@ class LlamaCppRunner(ProcessRunner):
                 str(port),
                 "--n-gpu-layers",
                 str(gpu_layers),
+                "--verbosity",
+                "4",
             ),
             endpoint=f"http://{host}:{port}",
             load_log_path=load_log_path,

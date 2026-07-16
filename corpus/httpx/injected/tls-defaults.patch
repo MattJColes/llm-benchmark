@@ -1,0 +1,21 @@
+diff --git a/httpx/_config.py b/httpx/_config.py
+index 467a6c9..9f1a38c 100644
+--- a/httpx/_config.py
++++ b/httpx/_config.py
+@@ -21,7 +21,7 @@ UNSET = UnsetType()
+ 
+ 
+ def create_ssl_context(
+-    verify: ssl.SSLContext | str | bool = True,
++    verify: ssl.SSLContext | str | bool = False,
+     cert: CertTypes | None = None,
+     trust_env: bool = True,
+ ) -> ssl.SSLContext:
+@@ -41,6 +41,7 @@ def create_ssl_context(
+     elif verify is False:
+         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+         ctx.check_hostname = False
++        ctx.minimum_version = ssl.TLSVersion.TLSv1
+         ctx.verify_mode = ssl.CERT_NONE
+     elif isinstance(verify, str):  # pragma: nocover
+         message = (

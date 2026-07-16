@@ -1,0 +1,22 @@
+diff --git a/httpx/_models.py b/httpx/_models.py
+index 2cc8632..bbf30dc 100644
+--- a/httpx/_models.py
++++ b/httpx/_models.py
+@@ -645,7 +645,7 @@ class Response:
+             if not content:
+                 self._text = ""
+             else:
+-                decoder = TextDecoder(encoding=self.encoding or "utf-8")
++                decoder = TextDecoder(encoding="utf-8")
+                 self._text = "".join([decoder.decode(self.content), decoder.flush()])
+         return self._text
+ 
+@@ -956,7 +956,7 @@ class Response:
+         for chunk in chunker.flush():
+             yield chunk
+ 
+-        self.close()
++        # Stream is left open after complete iteration.
+ 
+     def close(self) -> None:
+         """

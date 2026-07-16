@@ -1,0 +1,43 @@
+selection:
+  box: spark
+  backend: cuda
+  model: qwen3-0.6b-q8_0
+  run_date: '2026-07-15'
+box:
+  id: spark
+  os: ubuntu24
+  gpu: gb10
+  expect:
+  - cuda
+  coding_prereqs:
+    rust:
+      check: cargo --version
+      pin: 1.8x
+    python:
+      check: python3 --version
+      pin: '3.12'
+    node:
+      check: node --version
+      pin: 22.x
+    docker:
+      check: docker run --rm hello-world
+      pin: available
+model:
+  id: qwen3-0.6b-q8_0
+  format: gguf
+  architecture: dense
+  quant: Q8_0
+  sha256: 84c0dbe606526d5907251d88ea88b41457f46ce456e9a333d5d2b6245a95cafe
+  path: models/Qwen3-0.6B-Q8_0.gguf
+  source_repository: ggml-org/Qwen3-0.6B-GGUF
+  revision: a41486f827d17edd055fe6b3b0ba3f8d427c0519
+  mmproj_path: null
+  mmproj_sha256: null
+pins:
+  llama_cpp_commit: a935fbffe
+  mlx_lm_version: 0.31.3
+environment:
+  captured_at: '2026-07-15T12:07:53.322819+00:00'
+  os: Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39
+  machine: aarch64
+  python: 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0]

@@ -19,8 +19,21 @@ def generate_summary(results_root: Path) -> Path:
     ]
     for timing_path in runs:
         events = list(read_events(timing_path))
-        prefill = _latest(events, "prefill_tokens_per_second")
-        decode = _latest(events, "decode_tokens_per_second")
+        superseded = {
+            event["supersedes_sample_id"]
+            for event in events
+            if isinstance(event.get("supersedes_sample_id"), str)
+        }
+        current = [
+            event
+            for event in events
+            if event.get("sample_id") not in superseded
+            and event.get("status", "completed") == "completed"
+            and event.get("comparable", True)
+            and event.get("preflight_status", "passed") == "passed"
+        ]
+        prefill = _latest(current, "prefill_tokens_per_second")
+        decode = _latest(current, "decode_tokens_per_second")
         lines.append(f"| {timing_path.parent.name} | {prefill or '-'} | {decode or '-'} |")
     report_path = results_root / "reports" / "summary.md"
     report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -90,14 +103,23 @@ def generate_track_reports(results_root: Path) -> list[Path]:
     for track, events in tracks.items():
         path = results_root / "reports" / f"{track}.md"
         path.parent.mkdir(parents=True, exist_ok=True)
-        values = [
-            float(event["decode_tokens_per_second"])
+        superseded = {
+            event["supersedes_sample_id"]
             for event in events
-            if "decode_tokens_per_second" in event
-        ]
+            if isinstance(event.get("supersedes_sample_id"), str)
+        }
+        current = [event for event in events if event.get("sample_id") not in superseded]
+        comparable = [event for event in current if event.get("comparable", True)]
+        values: list[float] = []
+        for event in comparable:
+            try:
+                values.append(float(event["decode_tokens_per_second"]))
+            except (KeyError, TypeError, ValueError):
+                continue
         average = sum(values) / len(values) if values else None
         path.write_text(
-            f"# {track}\n\nDecode mean: {average if average is not None else '-'}\n",
+            f"# {track}\n\nDecode mean: {average if average is not None else '-'}\n\n"
+            f"Non-comparable observations: {len(current) - len(comparable)}\n",
             encoding="utf-8",
         )
         paths.append(path)

@@ -82,9 +82,9 @@
 
 ## 10. End-To-End Validation And Operations
 
-- [ ] 10.1 Run the complete foundation path on each available box using the tiny model: configuration resolution, fresh preflight, runner launch, performance/quant observations, and report generation.
-- [ ] 10.2 Validate that a changed binary or driver produces a stale-preflight rejection and a fingerprint mismatch produces non-comparable reporting.
-- [ ] 10.3 Run the code-review frontier validity gate and manually spot-check at least 20 percent of its judge verdicts before local review sweeps.
-- [ ] 10.4 Review and approve the tool-calling scenario set before enabling structured-agent sweeps.
+- [x] 10.1 Run the complete foundation path on each available box using the tiny model: configuration resolution, fresh preflight, runner launch, performance/quant observations, and report generation.
+- [x] 10.2 Validate that a changed binary or driver produces a stale-preflight rejection and a fingerprint mismatch produces non-comparable reporting.
+- [x] 10.3 Run the code-review frontier validity gate and manually spot-check at least 20 percent of its judge verdicts before local review sweeps.
+- [x] 10.4 Review and approve the tool-calling scenario set before enabling structured-agent sweeps.
 - [ ] 10.5 Confirm Linux smart-plug availability and configure power collection only for boxes with a validated meter.
 - [ ] 10.6 Run the pruned accuracy matrix and full cheap matrix with resume testing, then regenerate reports and charts from the raw result tree.

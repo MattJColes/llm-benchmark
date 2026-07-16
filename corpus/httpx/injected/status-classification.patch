@@ -1,0 +1,22 @@
+diff --git a/httpx/_status_codes.py b/httpx/_status_codes.py
+index 133a623..f13b482 100644
+--- a/httpx/_status_codes.py
++++ b/httpx/_status_codes.py
+@@ -61,7 +61,7 @@ class codes(IntEnum):
+         """
+         Returns `True` for 3xx status codes, `False` otherwise.
+         """
+-        return 300 <= value <= 399
++        return 300 <= value <= 307
+ 
+     @classmethod
+     def is_client_error(cls, value: int) -> bool:
+@@ -75,7 +75,7 @@ class codes(IntEnum):
+         """
+         Returns `True` for 5xx status codes, `False` otherwise.
+         """
+-        return 500 <= value <= 599
++        return value == 429 or 500 <= value <= 599
+ 
+     @classmethod
+     def is_error(cls, value: int) -> bool:

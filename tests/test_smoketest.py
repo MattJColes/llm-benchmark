@@ -16,6 +16,20 @@ def test_accepts_a_greedy_gpu_smoketest() -> None:
     assert result.passed
 
 
+def test_accepts_reasoning_content_as_generated_output() -> None:
+    result = check_smoketest(
+        completion={
+            "choices": [{"message": {"content": "", "reasoning_content": "local inference"}}],
+            "usage": {"completion_tokens": 32},
+        },
+        exit_code=0,
+        load_log="offloaded 30/32 layers to GPU",
+        config=SmoketestConfig(model="tiny", prompt="test"),
+    )
+
+    assert result.passed
+
+
 def test_rejects_empty_cpu_or_nan_smoketest() -> None:
     result = check_smoketest(
         completion={"choices": [{"message": {"content": ""}}], "usage": {"completion_tokens": 2}},

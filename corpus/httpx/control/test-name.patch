@@ -1,0 +1,13 @@
+diff --git a/tests/client/test_redirects.py b/tests/client/test_redirects.py
+index f658271..33c63a8 100644
+--- a/tests/client/test_redirects.py
++++ b/tests/client/test_redirects.py
+@@ -257,7 +257,7 @@ def test_sync_too_many_redirects():
+         )
+ 
+ 
+-def test_redirect_loop():
++def test_redirect_loop_is_rejected():
+     client = httpx.Client(transport=httpx.MockTransport(redirects))
+     with pytest.raises(httpx.TooManyRedirects):
+         client.get("https://example.org/redirect_loop", follow_redirects=True)

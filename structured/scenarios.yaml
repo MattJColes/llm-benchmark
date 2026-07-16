@@ -1,14 +1,55 @@
 tools:
-  - name: search
-    arguments: {query: string}
+  - name: search_files
+    description: Search repository file contents for a text query.
+    arguments: { query: string, path: string }
   - name: read_file
-    arguments: {path: string}
+    description: Read one repository file by its exact path.
+    arguments: { path: string }
   - name: calculator
-    arguments: {expression: string}
+    description: Evaluate a numeric arithmetic expression.
+    arguments: { expression: string }
+  - name: search_web
+    description: Search the public web for current information.
+    arguments: { query: string }
 scenarios:
   - id: no-call
+    prompt: Reply with exactly "ready" without using a tool.
     expected_calls: []
-  - id: calculator
+  - id: calculator-selection
+    prompt: Calculate 84 multiplied by 3 and divided by 2.
     expected_calls:
       - name: calculator
-        arguments: {expression: "84 * 3 / 2"}
+        arguments: { expression: "84 * 3 / 2" }
+    tool_results:
+      - { value: 126 }
+  - id: repository-search-arguments
+    prompt: Search Python source files under src for the text require_validity_gate.
+    expected_calls:
+      - name: search_files
+        arguments: { query: require_validity_gate, path: src }
+    tool_results:
+      - matches: [src/llm_benchmark/code_review.py]
+  - id: exact-file-vs-search
+    prompt: Read the exact repository file config/benchmark.yaml.
+    expected_calls:
+      - name: read_file
+        arguments: { path: config/benchmark.yaml }
+    tool_results:
+      - { content: "boxes: [...]" }
+  - id: local-vs-web-search
+    prompt: Search this repository under tests for test_httpx_corpus_integrity.
+    expected_calls:
+      - name: search_files
+        arguments: { query: test_httpx_corpus_integrity, path: tests }
+    tool_results:
+      - matches: [tests/test_code_review.py]
+  - id: search-then-read-chain
+    prompt: Find the configuration file containing qwen3-0.6b-q8_0, then read the matching file.
+    expected_calls:
+      - name: search_files
+        arguments: { query: qwen3-0.6b-q8_0, path: config }
+      - name: read_file
+        arguments: { path: config/benchmark.yaml }
+    tool_results:
+      - matches: [config/benchmark.yaml]
+      - { content: "models: [qwen3-0.6b-q8_0]" }

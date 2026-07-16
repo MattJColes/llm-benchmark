@@ -1,0 +1,22 @@
+diff --git a/httpx/_urls.py b/httpx/_urls.py
+index 301d087..a49b227 100644
+--- a/httpx/_urls.py
++++ b/httpx/_urls.py
+@@ -154,7 +154,7 @@ class URL:
+         For example: "jo@email.com"
+         """
+         userinfo = self._uri_reference.userinfo
+-        return unquote(userinfo.partition(":")[0])
++        return unquote(userinfo)
+ 
+     @property
+     def password(self) -> str:
+@@ -228,7 +228,7 @@ class URL:
+         assert httpx.URL("http://www.example.com") == httpx.URL("http://www.example.com:80")
+         assert httpx.URL("http://www.example.com:80").port is None
+         """
+-        return self._uri_reference.port
++        return None if self._uri_reference.port is None else self._uri_reference.port + 1
+ 
+     @property
+     def netloc(self) -> bytes:

@@ -1,358 +1,379 @@
 repository: https://github.com/encode/httpx.git
 commit: b5addb64f0161ff6bfe94c124ef76f6a1fba5254
 cases:
-- id: inject-01
-  kind: injected
-  branch: benchmark/async-client-close
-  files:
-  - httpx/_client.py
-  category: missing-await
-  line_start: 470
-  line_end: 472
-  rationale: aclose coroutine result is discarded in __aexit__
-  severity: high
-- id: inject-02
-  kind: injected
-  branch: benchmark/async-client-close
-  files:
-  - httpx/_transports/asgi.py
-  category: resource-leak
-  line_start: 88
-  line_end: 90
-  rationale: pool connection not released when the request raises
-  severity: medium
-- id: inject-03
-  kind: injected
-  branch: benchmark/redirect-handler
-  files:
-  - httpx/_client.py
-  category: infinite-loop
-  line_start: 920
-  line_end: 922
-  rationale: 303 redirect is not counted against the follow limit
-  severity: high
-- id: inject-04
-  kind: injected
-  branch: benchmark/redirect-handler
-  files:
-  - httpx/_client.py
-  category: credential-leak
-  line_start: 945
-  line_end: 947
-  rationale: Authorization header is forwarded after a cross-host redirect
-  severity: high
-- id: inject-05
-  kind: injected
-  branch: benchmark/url-parsing
-  files:
-  - httpx/_urls.py
-  category: off-by-one
-  line_start: 134
-  line_end: 136
-  rationale: port substring is sliced one byte short, truncating ports
-  severity: medium
-- id: inject-06
-  kind: injected
-  branch: benchmark/url-parsing
-  files:
-  - httpx/_urls.py
-  category: ssrf
-  line_start: 210
-  line_end: 212
-  rationale: userinfo prefix is accepted on redirect targets
-  severity: high
-- id: inject-07
-  kind: injected
-  branch: benchmark/header-encoding
-  files:
-  - httpx/_models.py
-  category: header-injection
-  line_start: 188
-  line_end: 190
-  rationale: header value is not rejected when it contains CR or LF
-  severity: high
-- id: inject-08
-  kind: injected
-  branch: benchmark/header-encoding
-  files:
-  - httpx/_models.py
-  category: wrong-encoding
-  line_start: 240
-  line_end: 242
-  rationale: charset from Content-Type is ignored in favour of utf-8
-  severity: low
-- id: inject-09
-  kind: injected
-  branch: benchmark/timeout-config
-  files:
-  - httpx/_client.py
-  category: off-by-one
-  line_start: 380
-  line_end: 382
-  rationale: connect timeout is compared with < instead of <=
-  severity: medium
-- id: inject-10
-  kind: injected
-  branch: benchmark/timeout-config
-  files:
-  - httpx/_client.py
-  category: wrong-config
-  line_start: 405
-  line_end: 407
-  rationale: pool timeout value is applied as the read timeout
-  severity: medium
-- id: inject-11
-  kind: injected
-  branch: benchmark/cookie-jar
-  files:
-  - httpx/_cookiejar.py
-  category: insecure-cookie
-  line_start: 70
-  line_end: 72
-  rationale: secure attribute is dropped when the cookie is inserted
-  severity: high
-- id: inject-12
-  kind: injected
-  branch: benchmark/cookie-jar
-  files:
-  - httpx/_cookiejar.py
-  category: cookie-injection
-  line_start: 120
-  line_end: 122
-  rationale: domain match accepts an unbounded suffix of the request host
-  severity: high
-- id: inject-13
-  kind: injected
-  branch: benchmark/content-streaming
-  files:
-  - httpx/_client.py
-  category: resource-leak
-  line_start: 840
-  line_end: 842
-  rationale: response stream is not closed when read raises
-  severity: medium
-- id: inject-14
-  kind: injected
-  branch: benchmark/content-streaming
-  files:
-  - httpx/_models.py
-  category: parse-error
-  line_start: 360
-  line_end: 362
-  rationale: chunk size is parsed as a signed integer
-  severity: low
-- id: inject-15
-  kind: injected
-  branch: benchmark/proxy-tunnel
-  files:
-  - httpx/_client.py
-  category: ssrf
-  line_start: 1010
-  line_end: 1012
-  rationale: CONNECT target host is not validated against allow-lists
-  severity: critical
-- id: inject-16
-  kind: injected
-  branch: benchmark/proxy-tunnel
-  files:
-  - httpx/_client.py
-  category: credential-leak
-  line_start: 1025
-  line_end: 1027
-  rationale: proxy credentials are sent to the origin server
-  severity: high
-- id: inject-17
-  kind: injected
-  branch: benchmark/tls-verify
-  files:
-  - httpx/_config.py
-  category: tls-bypass
-  line_start: 60
-  line_end: 62
-  rationale: verify defaults to False for self-signed certificates
-  severity: critical
-- id: inject-18
-  kind: injected
-  branch: benchmark/tls-verify
-  files:
-  - httpx/_config.py
-  category: hostname-mismatch
-  line_start: 95
-  line_end: 97
-  rationale: hostname verification is skipped for IP-literal hosts
-  severity: high
-- id: inject-19
-  kind: injected
-  branch: benchmark/status-codes
-  files:
-  - httpx/_status_codes.py
-  category: wrong-redirect
-  line_start: 40
-  line_end: 42
-  rationale: 308 is classified as a non-permanent redirect
-  severity: medium
-- id: inject-20
-  kind: injected
-  branch: benchmark/status-codes
-  files:
-  - httpx/_client.py
-  category: wrong-retry
-  line_start: 900
-  line_end: 902
-  rationale: 429 is retried as if it were a server error
-  severity: low
-- id: inject-21
-  kind: injected
-  branch: benchmark/multipart-encode
-  files:
-  - httpx/_multipart.py
-  category: boundary-collision
-  line_start: 55
-  line_end: 57
-  rationale: multipart boundary is a fixed constant rather than random
-  severity: medium
-- id: inject-22
-  kind: injected
-  branch: benchmark/multipart-encode
-  files:
-  - httpx/_multipart.py
-  category: header-injection
-  line_start: 180
-  line_end: 182
-  rationale: filename containing CRLF is written unescaped into the part header
-  severity: medium
-- id: inject-23
-  kind: injected
-  branch: benchmark/auth-flow
-  files:
-  - httpx/_auth.py
-  category: cleartext-auth
-  line_start: 50
-  line_end: 52
-  rationale: basic authentication is permitted over a plaintext http scheme
-  severity: high
-- id: inject-24
-  kind: injected
-  branch: benchmark/auth-flow
-  files:
-  - httpx/_auth.py
-  category: secret-log
-  line_start: 88
-  line_end: 90
-  rationale: bearer token is echoed in the exception message on a 401
-  severity: high
-- id: inject-25
-  kind: injected
-  branch: benchmark/event-hooks
-  files:
-  - httpx/_client.py
-  category: missing-await
-  line_start: 500
-  line_end: 502
-  rationale: async request hook is called without await
-  severity: high
-- id: inject-26
-  kind: injected
-  branch: benchmark/event-hooks
-  files:
-  - httpx/_client.py
-  category: swallowed-error
-  line_start: 520
-  line_end: 522
-  rationale: hook exception is swallowed and the request continues
-  severity: medium
-- id: control-01
-  kind: control
-  branch: benchmark/control-type-hints
-  files:
-  - httpx/_client.py
-- id: control-02
-  kind: control
-  branch: benchmark/control-docstrings
-  files:
-  - httpx/_urls.py
-- id: control-03
-  kind: control
-  branch: benchmark/control-dev-deps
-  files:
-  - requirements.txt
-- id: control-04
-  kind: control
-  branch: benchmark/control-test-coverage
-  files:
-  - tests/client/test_redirects.py
-- id: control-05
-  kind: control
-  branch: benchmark/control-formatting
-  files:
-  - httpx/_models.py
-- id: historical-01
-  kind: historical
-  branch: historical/redirect-auth-drop
-  files:
-  - httpx/_client.py
-  category: credential-leak
-  line_start: 945
-  line_end: 948
-  rationale: original fix that stopped forwarding credentials across hosts on redirect
-  severity: high
-- id: historical-02
-  kind: historical
-  branch: historical/proxy-host-validation
-  files:
-  - httpx/_client.py
-  category: ssrf
-  line_start: 1010
-  line_end: 1013
-  rationale: original fix that validated the proxy CONNECT target
-  severity: critical
-- id: historical-03
-  kind: historical
-  branch: historical/url-control-chars
-  files:
-  - httpx/_urls.py
-  category: header-injection
-  line_start: 134
-  line_end: 138
-  rationale: original fix that rejected control characters in the URL path
-  severity: high
-- id: historical-04
-  kind: historical
-  branch: historical/status-308-handling
-  files:
-  - httpx/_client.py
-  category: wrong-redirect
-  line_start: 900
-  line_end: 904
-  rationale: original fix that treated 308 as a permanent redirect
-  severity: medium
-- id: historical-05
-  kind: historical
-  branch: historical/charset-fallback
-  files:
-  - httpx/_models.py
-  category: wrong-encoding
-  line_start: 238
-  line_end: 242
-  rationale: original fix that honoured the Content-Type charset
-  severity: low
-- id: historical-06
-  kind: historical
-  branch: historical/pool-leak-on-timeout
-  files:
-  - httpx/_transports/http.py
-  category: resource-leak
-  line_start: 215
-  line_end: 219
-  rationale: original fix that released pool connections on read timeout
-  severity: medium
-- id: historical-07
-  kind: historical
-  branch: historical/cookie-domain-match
-  files:
-  - httpx/_cookiejar.py
-  category: cookie-injection
-  line_start: 118
-  line_end: 123
-  rationale: original fix that tightened the cookie domain match
-  severity: high
+  - id: inject-01
+    kind: injected
+    patch: httpx/injected/async-cleanup.patch
+    files:
+      - httpx/_client.py
+    category: missing-await
+    line_start: 1985
+    line_end: 1985
+    rationale: async transport close coroutine is discarded
+    severity: high
+  - id: inject-02
+    kind: injected
+    patch: httpx/injected/async-cleanup.patch
+    files:
+      - httpx/_client.py
+    category: resource-leak
+    line_start: 1988
+    line_end: 1988
+    rationale: mounted proxy close coroutine is discarded
+    severity: high
+  - id: inject-03
+    kind: injected
+    patch: httpx/injected/async-cleanup.patch
+    files:
+      - httpx/_client.py
+    category: missing-await
+    line_start: 2016
+    line_end: 2016
+    rationale: async context exit coroutine is discarded
+    severity: high
+  - id: inject-04
+    kind: injected
+    patch: httpx/injected/redirect-safety.patch
+    files:
+      - httpx/_client.py
+    category: off-by-one
+    line_start: 971
+    line_end: 971
+    rationale: redirect limit rejects the last permitted redirect
+    severity: medium
+  - id: inject-05
+    kind: injected
+    patch: httpx/injected/redirect-safety.patch
+    files:
+      - httpx/_client.py
+    category: credential-leak
+    line_start: 556
+    line_end: 556
+    rationale: Authorization is retained on a cross-origin redirect
+    severity: high
+  - id: inject-06
+    kind: injected
+    patch: httpx/injected/url-components.patch
+    files:
+      - httpx/_urls.py
+    category: off-by-one
+    line_start: 231
+    line_end: 231
+    rationale: explicit URL ports are incremented
+    severity: medium
+  - id: inject-07
+    kind: injected
+    patch: httpx/injected/url-components.patch
+    files:
+      - httpx/_urls.py
+    category: credential-leak
+    line_start: 157
+    line_end: 157
+    rationale: URL username includes the password component
+    severity: high
+  - id: inject-08
+    kind: injected
+    patch: httpx/injected/header-handling.patch
+    files:
+      - httpx/_models.py
+    category: wrong-encoding
+    line_start: 82
+    line_end: 82
+    rationale: header values silently use UTF-8 instead of strict ASCII
+    severity: medium
+  - id: inject-09
+    kind: injected
+    patch: httpx/injected/header-handling.patch
+    files:
+      - httpx/_models.py
+    category: secret-log
+    line_start: 53
+    line_end: 53
+    rationale: proxy authorization is no longer redacted in representations
+    severity: high
+  - id: inject-10
+    kind: injected
+    patch: httpx/injected/timeout-mapping.patch
+    files:
+      - httpx/_config.py
+    category: wrong-config
+    line_start: 135
+    line_end: 137
+    rationale: read timeout is populated from pool timeout
+    severity: high
+  - id: inject-11
+    kind: injected
+    patch: httpx/injected/timeout-mapping.patch
+    files:
+      - httpx/_client.py
+    category: wrong-config
+    line_start: 585
+    line_end: 585
+    rationale: explicit request timeout extensions are overwritten
+    severity: high
+  - id: inject-12
+    kind: injected
+    patch: httpx/injected/redirect-cookies.patch
+    files:
+      - httpx/_client.py
+    category: insecure-cookie
+    line_start: 485
+    line_end: 485
+    rationale: expired request cookies are merged back during redirects
+    severity: high
+  - id: inject-13
+    kind: injected
+    patch: httpx/injected/redirect-cookies.patch
+    files:
+      - httpx/_client.py
+    category: cookie-injection
+    line_start: 570
+    line_end: 570
+    rationale: stale Cookie header is retained during redirects
+    severity: high
+  - id: inject-14
+    kind: injected
+    patch: httpx/injected/response-streaming.patch
+    files:
+      - httpx/_models.py
+    category: wrong-encoding
+    line_start: 648
+    line_end: 648
+    rationale: response text ignores the declared charset
+    severity: medium
+  - id: inject-15
+    kind: injected
+    patch: httpx/injected/response-streaming.patch
+    files:
+      - httpx/_models.py
+    category: resource-leak
+    line_start: 959
+    line_end: 959
+    rationale: completed response iteration leaves the stream open
+    severity: high
+  - id: inject-16
+    kind: injected
+    patch: httpx/injected/tls-defaults.patch
+    files:
+      - httpx/_config.py
+    category: tls-bypass
+    line_start: 24
+    line_end: 24
+    rationale: SSL context creation defaults to disabling verification
+    severity: critical
+  - id: inject-17
+    kind: injected
+    patch: httpx/injected/tls-defaults.patch
+    files:
+      - httpx/_config.py
+    category: weak-tls
+    line_start: 44
+    line_end: 44
+    rationale: TLS 1.0 is explicitly permitted for insecure contexts
+    severity: high
+  - id: inject-18
+    kind: injected
+    patch: httpx/injected/status-classification.patch
+    files:
+      - httpx/_status_codes.py
+    category: wrong-redirect
+    line_start: 64
+    line_end: 64
+    rationale: status 308 is excluded from redirects
+    severity: medium
+  - id: inject-19
+    kind: injected
+    patch: httpx/injected/status-classification.patch
+    files:
+      - httpx/_status_codes.py
+    category: wrong-retry
+    line_start: 78
+    line_end: 78
+    rationale: status 429 is classified as a server error
+    severity: medium
+  - id: inject-20
+    kind: injected
+    patch: httpx/injected/multipart-validation.patch
+    files:
+      - httpx/_multipart.py
+    category: boundary-collision
+    line_start: 237
+    line_end: 237
+    rationale: multipart boundaries use a fixed constant
+    severity: high
+  - id: inject-21
+    kind: injected
+    patch: httpx/injected/multipart-validation.patch
+    files:
+      - httpx/_multipart.py
+    category: header-injection
+    line_start: 41
+    line_end: 42
+    rationale: multipart names and filenames are emitted without escaping
+    severity: high
+  - id: inject-22
+    kind: injected
+    patch: httpx/injected/authentication.patch
+    files:
+      - httpx/_auth.py
+    category: auth-failure
+    line_start: 141
+    line_end: 141
+    rationale: Basic authentication omits the username from encoded credentials
+    severity: high
+  - id: inject-23
+    kind: injected
+    patch: httpx/injected/authentication.patch
+    files:
+      - httpx/_auth.py
+    category: secret-leak
+    line_start: 142
+    line_end: 142
+    rationale: Basic authorization header includes plaintext credentials
+    severity: critical
+  - id: inject-24
+    kind: injected
+    patch: httpx/injected/async-hooks.patch
+    files:
+      - httpx/_client.py
+    category: missing-await
+    line_start: 1692
+    line_end: 1692
+    rationale: async request hook coroutine is discarded
+    severity: high
+  - id: inject-25
+    kind: injected
+    patch: httpx/injected/async-hooks.patch
+    files:
+      - httpx/_client.py
+    category: missing-await
+    line_start: 1700
+    line_end: 1700
+    rationale: async response hook coroutine is discarded
+    severity: high
+  - id: inject-26
+    kind: injected
+    patch: httpx/injected/async-hooks.patch
+    files:
+      - httpx/_client.py
+    category: swallowed-error
+    line_start: 1694
+    line_end: 1697
+    rationale: transport failures are swallowed and retried forever
+    severity: critical
+  - id: control-01
+    kind: control
+    patch: httpx/control/type-annotation.patch
+    files:
+      - httpx/_client.py
+  - id: control-02
+    kind: control
+    patch: httpx/control/docstring.patch
+    files:
+      - httpx/_urls.py
+  - id: control-03
+    kind: control
+    patch: httpx/control/comment.patch
+    files:
+      - httpx/_config.py
+  - id: control-04
+    kind: control
+    patch: httpx/control/test-name.patch
+    files:
+      - tests/client/test_redirects.py
+  - id: control-05
+    kind: control
+    patch: httpx/control/formatting.patch
+    files:
+      - httpx/_models.py
+  - id: historical-01
+    kind: historical
+    patch: httpx/historical/redirect-cookie-expiry.patch
+    files:
+      - httpx/_client.py
+    category: cookie-injection
+    line_start: 485
+    line_end: 570
+    rationale: redirects resurrect expired cookies by merging the original request cookies
+    severity: high
+    fix_commit: 5aca0c0172c9cabc07cf6a342fd18e58f0265fa0
+    parent_commit: 1a32cf036a825f6eb35395af5388a3b23180a82e
+    pr: 529
+  - id: historical-02
+    kind: historical
+    patch: httpx/historical/digest-rfc2069.patch
+    files:
+      - httpx/_auth.py
+    category: auth-failure
+    line_start: 282
+    line_end: 290
+    rationale: RFC 2069 digest authentication hashes HA1 twice
+    severity: high
+    fix_commit: 99cba6ac642b12f0331d069ae324402c54c4c600
+    parent_commit: ca51b4532a4495c38c8abf1a393dbd80099deae3
+    pr: 3045
+  - id: historical-03
+    kind: historical
+    patch: httpx/historical/client-send-timeout.patch
+    files:
+      - httpx/_client.py
+    category: missing-timeout
+    line_start: 581
+    line_end: 1611
+    rationale: Client.send of a directly constructed Request omits client timeouts
+    severity: high
+    fix_commit: 6d852d319acd5d97caf14037dff15ede04b37542
+    parent_commit: df5345140e09ac6c2de0d9589bcd6f3e31c6aa3f
+    pr: 3116
+  - id: historical-04
+    kind: historical
+    patch: httpx/historical/asgi-exception-suppression.patch
+    files:
+      - httpx/_transports/asgi.py
+    category: swallowed-error
+    line_start: 172
+    line_end: 172
+    rationale: ASGI application exceptions escape even when suppression is configured
+    severity: high
+    fix_commit: a682f6f1c7f1c5e10c66ae5bef139aea37ef0c4e
+    parent_commit: f9abbbbb4898cac96420e5c5b9d34036a94d46bf
+    pr: 2669
+  - id: historical-05
+    kind: historical
+    patch: httpx/historical/proxy-ssl-context.patch
+    files:
+      - httpx/_transports/default.py
+    category: tls-config
+    line_start: 319
+    line_end: 322
+    rationale: async HTTPS proxy transport omits the configured proxy SSL context
+    severity: high
+    fix_commit: 88a81c5d31a4a8b4bd0a860dedd3bb12dc09ff86
+    parent_commit: fa6dac8383541669f42086d4f07c71b0f8d6a279
+    pr: 3175
+  - id: historical-06
+    kind: historical
+    patch: httpx/historical/client-cert-verify-false.patch
+    files:
+      - httpx/_config.py
+    category: tls-auth
+    line_start: 42
+    line_end: 45
+    rationale: verify=False returns before loading the configured client certificate
+    severity: high
+    fix_commit: 89599a9541af14bcf906fc4ed58ccbdf403802ba
+    parent_commit: 8ecb86f0d74ffc52d4663214fae9526bee89358d
+    pr: 3442
+  - id: historical-07
+    kind: historical
+    patch: httpx/historical/digest-retry-cookies.patch
+    files:
+      - httpx/_auth.py
+    category: cookie-loss
+    line_start: 217
+    line_end: 220
+    rationale: Digest authentication retry omits cookies from the retried request
+    severity: medium
+    fix_commit: 88e84314378b31336027363af862619c519a4a3a
+    parent_commit: c3585a5ccfa57bec653f3846b8625a27d11dcd5e
+    pr: 2846

@@ -1,0 +1,22 @@
+diff --git a/httpx/_client.py b/httpx/_client.py
+index 13cd933..219b13d 100644
+--- a/httpx/_client.py
++++ b/httpx/_client.py
+@@ -553,7 +553,7 @@ class BaseClient:
+             if not _is_https_redirect(request.url, url):
+                 # Strip Authorization headers when responses are redirected
+                 # away from the origin. (Except for direct HTTP to HTTPS redirects.)
+-                headers.pop("Authorization", None)
++                pass  # Authorization is incorrectly retained across origins.
+ 
+             # Update the Host header.
+             headers["Host"] = url.netloc.decode("ascii")
+@@ -968,7 +968,7 @@ class Client(BaseClient):
+         history: list[Response],
+     ) -> Response:
+         while True:
+-            if len(history) > self.max_redirects:
++            if len(history) >= self.max_redirects:
+                 raise TooManyRedirects(
+                     "Exceeded maximum allowed redirects.", request=request
+                 )
