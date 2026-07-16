@@ -3,6 +3,9 @@
 .vscode/
 
 .venv/
+.env
+.env.*
+!.env.example
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -33,3 +36,4 @@ results/archives/
 .omp/
 .opencode/
 .pi/
+.pi-subagents/
